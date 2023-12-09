@@ -441,6 +441,36 @@ register(
     max_episode_steps=1000,
 )
 
+register(
+    id="UAV1Target1-v1",
+    entry_point="gymnasium.envs.custom_env.uav1target1:UAV1Target1",
+    max_episode_steps=6000,
+)
+
+
+register(
+    id="UAV1Target1-v2",
+    entry_point="gymnasium.envs.custom_env.uav1target1_v2:UAV1Target1_v2",
+    max_episode_steps=6000,
+)
+
+register(
+    id="MUMT",
+    entry_point="gymnasium.envs.custom_env.mumt:MUMT",
+    max_episode_steps=6000,
+)
+
+register(
+    id="DKC_Unicycle",
+    entry_point="gymnasium.envs.custom_env.dkc_unicycle:DKC_Unicycle",
+    max_episode_steps=2000,
+)
+
+register(
+    id="TOC_Unicycle",
+    entry_point="gymnasium.envs.custom_env.toc_unicycle:TOC_Unicycle",
+    max_episode_steps=2000,
+)
 
 # --- For shimmy compatibility
 def _raise_shimmy_error(*args: Any, **kwargs: Any):
