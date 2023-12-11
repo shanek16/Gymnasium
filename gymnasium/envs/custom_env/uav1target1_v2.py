@@ -242,7 +242,7 @@ class UAV1Target1_v2(Env):
         self.battery_space = np.concatenate([np.arange(0, 500, 100), np.arange(500, 3100, 500)])
 
         self.age_space = np.arange(0, 1001, 100) #changeage
-        self.UAV1Target1_result00 = np.load(f"/home/shane16/Project/model_guard/uav_paper/Stochastic optimal control/uav_dp/RESULTS/1U1T_s6_age1000:100_gamma_{self.discount}_dt_{self.dt}_{'val'}_iter.npz")
+        self.UAV1Target1_result00 = np.load(f"/1U1T_s6_age1000:100_gamma_{self.discount}_dt_{self.dt}_{'val'}_iter.npz")
         self.UAV1Target1_straightened_policy00 = self.UAV1Target1_result00["policy"]
         self.UAV1Target1_values00 = self.UAV1Target1_result00["values"]
         # print('shape of UAV1Target1_straightened_policy00: ', np.shape(self.UAV1Target1_straightened_policy00))
