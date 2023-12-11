@@ -1,9 +1,9 @@
 import os
-# import sys
-# current_file_path = os.path.dirname(os.path.abspath(__file__))
-# sys.path.append(current_file_path)
-# desired_path = os.path.expanduser("~/Project/PERSISTENT/Gymnasium/gymnasium")
-# sys.path.append(desired_path)
+import sys
+current_file_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(current_file_path)
+desired_path = os.path.expanduser("~/Project/PERSISTENT/Gymnasium")
+sys.path.append(desired_path)
 import numpy as np
 from gymnasium import Env
 from gymnasium.spaces import Box, Dict, Discrete # MultiBinary, MultiDiscrete
