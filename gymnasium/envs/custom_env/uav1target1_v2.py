@@ -123,8 +123,6 @@ class UAV1Target1_v2(Env):
                     high=np.float32(3000),
                     dtype=np.float32,
                 ),
-                # "battery": Discrete(3001),
-                # "age": Discrete(1001), #changeage
                 "age": Box(
                     low=np.float32(0),
                     high=np.float32(1000),
@@ -134,7 +132,7 @@ class UAV1Target1_v2(Env):
         )
         self.action_space = Discrete(2, seed = self.seed)  # 0: charge, 1: surveillance
         self.dt = dt
-        self.discount = 0.9999
+        self.discount = 0.999
         self.d = d  # target distance
         self.l = l  # coverage gap: coverage: d-l ~ d+l # noqa
         self.m = m  # of targets
@@ -149,6 +147,7 @@ class UAV1Target1_v2(Env):
         self.episode_counter = 0
         self.frame_counter = 0
         self.save_frames = False
+        self.action = None
         # self.print_q_init()
         self.future = 10
 
@@ -184,7 +183,7 @@ class UAV1Target1_v2(Env):
         self,
         uav_pose=None,
         target_pose=None,
-        battery=3000,
+        battery=None,
         age=0,
         seed: Optional[int] = None,
         options: Optional[dict] = None,
@@ -213,10 +212,14 @@ class UAV1Target1_v2(Env):
             )
         else:
             uav_state = uav_pose
+        if battery is None:
+            battery = np.random.randint(1500, 3000)
+        else:
+            battery = battery
         self.uav1 = self.UAV(state=uav_state, battery=battery)
 
         if target_pose is None:
-            target1_r = np.random.uniform(0, 30)  # 0~ D-d
+            target1_r = np.random.uniform(20, 35)  # 0~ D-d
             target1_beta = np.random.uniform(-pi, pi)
             target_state = array((target1_r * cos(target1_beta), target1_r * sin(target1_beta)))
         else:
@@ -276,6 +279,7 @@ class UAV1Target1_v2(Env):
         return action
 
     def step(self, action):
+        self.action = action
         terminal = False
         truncated = False
         action = np.squeeze(action)
@@ -304,7 +308,7 @@ class UAV1Target1_v2(Env):
         if self.save_frames:
             # self.print_q_value()
             if int(self.step_count) % 6 == 0:
-                image = self.render(action, mode="rgb_array")
+                image = self.render(mode="rgb_array")
                 path = os.path.join(
                     self.SAVE_FRAMES_PATH,
                     f"{self.episode_counter:03d}",
@@ -407,7 +411,7 @@ class UAV1Target1_v2(Env):
         return dry_dict_observation, reward, terminal, truncated, {}
 
 
-    def render(self, action, mode="human"):
+    def render(self, mode="human"):
         if self.viewer is None:
             self.viewer = rendering.Viewer(1000, 1000)
             bound = int(40 * 1.05)
@@ -436,7 +440,7 @@ class UAV1Target1_v2(Env):
         target1 = self.viewer.draw_circle(
             radius=2, x=target1_x, y=target1_y, filled=True
         )
-        if action== 1:
+        if self.action== 1:
             target1.set_color(1, 1, 0)  # yellow
         else:
             target1.set_color(1, 0.6, 0)  # orange
@@ -446,7 +450,7 @@ class UAV1Target1_v2(Env):
         if self.uav1.charging == 1:
             charge_station.set_color(0.9, 0.1, 0.1)  # red
         else:
-            if action == 0:
+            if self.action == 0:
                 charge_station.set_color(1, 1, 0)  # yellow
             else:
                 charge_station.set_color(0.1, 0.9, 0.1)  # green            
@@ -559,7 +563,6 @@ if __name__ == "__main__":
         total_reward = 0
         while truncated == False:
             step += 1
-            r_c = obs['uav1_charge_station'][0]
             if bat > 2000:
                 action = 1
             elif bat > 1000:
@@ -579,7 +582,7 @@ if __name__ == "__main__":
             # print(f'step: {step} | battery: {bat} | reward: {reward}') #, end=' |')
             # print(f'action: {action}')#, end=' |')
             # uav_env.print_q_value()
-            uav_env.render(action, mode='rgb_array')
+            uav_env.render(mode='rgb_array')
         print(f'{i}: {total_reward}')   
         avg_reward += total_reward
     avg_reward /= repitition
@@ -605,4 +608,4 @@ if __name__ == "__main__":
         obs, reward, _, truncated, _ = uav_env.step(action_sample)
         bat = obs['battery']
         print(f'step: {step} | battery: {bat} | reward: {reward}')
-        uav_env.render(action_sample)'''
+        uav_env.render()'''

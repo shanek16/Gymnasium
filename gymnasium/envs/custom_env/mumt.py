@@ -95,6 +95,7 @@ class MUMT(Env):
 
     def __init__(
         self,
+        render_mode: Optional[str] = None,
         r_max=80,
         r_min=0,
         dt=0.05,
@@ -107,6 +108,7 @@ class MUMT(Env):
         seed = None # one circle 1200 time steps
     ):
         super().__init__()
+        self.render_mode = render_mode
         self.seed = seed
         # Create the observation space
         obs_space = {}
@@ -255,7 +257,7 @@ class MUMT(Env):
         self.battery_space = np.concatenate([np.arange(0, 500, 100), np.arange(500, 3100, 500)])
 
         self.age_space = np.arange(0, 1001, 100) #changeage
-        self.UAV1Target1_result00 = np.load(f"1U1T_s6_age1000:100_gamma_{self.discount}_dt_{self.dt}_{'val'}_iter.npz")
+        self.UAV1Target1_result00 = np.load(current_file_path + f"/1U1T_s6_age1000:100_gamma_{self.discount}_dt_{self.dt}_{'val'}_iter.npz")
         self.UAV1Target1_straightened_policy00 = self.UAV1Target1_result00["policy"]
         self.UAV1Target1_values00 = self.UAV1Target1_result00["values"]
         # print('shape of UAV1Target1_straightened_policy00: ', np.shape(self.UAV1Target1_straightened_policy00))
@@ -335,6 +337,7 @@ class MUMT(Env):
             self.targets[target_idx].surveillance = surveillance[target_idx]
             self.targets[target_idx].cal_age()
             reward += -self.targets[target_idx].age
+        reward = reward / self.n # average reward of all targets
         if self.save_frames and int(self.step_count) % 6 == 0:
             image = self.render(action, mode="rgb_array")
             path = os.path.join(
@@ -570,8 +573,9 @@ if __name__ == "__main__":
     state, reward, _, _, _ = env.step(action=0)
     print(state0)
     print(state)'''
-    
-    uav_env = MUMT(m=2, n=1)
+    m=2
+    n=1
+    uav_env = MUMT(m=m, n=n)
 
     # Number of features
     state_sample = uav_env.observation_space.sample()
@@ -582,7 +586,7 @@ if __name__ == "__main__":
     print('uav_env.action_space.n: ', uav_env.action_space)
         
     # testing env: alternating action
-    obs, _ = uav_env.reset()
+    '''obs, _ = uav_env.reset()
     step = 0
     while step < 5000:
         step += 1
@@ -591,7 +595,7 @@ if __name__ == "__main__":
         obs, reward, _, truncated, _ = uav_env.step(action_sample)
         bat = obs['battery']
         print(f'step: {step} | battery: {bat} | reward: {reward}')
-        uav_env.render(action_sample)
+        uav_env.render(action_sample)'''
     
     # testing env: heuristic policy
     '''repitition = 10
@@ -605,7 +609,13 @@ if __name__ == "__main__":
         total_reward = 0
         while truncated == False:
             step += 1
-            r_c = obs['uav1_charge_station'][0]
+            action = np.arange(1, m + 1)
+            action = np.where(action > n, 0, action)
+            print(obs) # {'uav1_target1': array([36.854134 , -1.4976969], dtype=float32), 'uav2_target1': array([37.672398 ,  3.0869958], dtype=float32), 'uav1_charge_station': array([21.95254  , -2.0162203], dtype=float32), 'uav2_charge_station': array([28.607574 ,  2.5069222], dtype=float32), 'battery': array([2099., 2594.], dtype=float32), 'age': array([0.], dtype=float32)}
+            # print each observation
+            for key, value in obs.items():
+                print(f'{key}: {value}')
+            input()
             if bat > 2000:
                 action = 1
             elif bat > 1000:
