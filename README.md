@@ -85,3 +85,23 @@ You can cite Gymnasium as:
         doi = {10.5281/zenodo.8127026},
 }
 ```
+## UAV env
+
+in Gym(nasium)/envs/custom_env
+
+- **[uav1target1_v2.py](https://github.com/shanek16/Gymnasium/blob/main/gymnasium/envs/custom_env/uav1target1_v2.py)**
+- **[mumt.py](https://github.com/shanek16/Gymnasium/blob/main/gymnasium/envs/custom_env/mumt.py) (multi uav multi target env)**
+    
+    → these environment use pre-calculated [policy table](http://naver.me/5AcVE4p2)
+        
+    ("v1_80_2a_dkc_val_iter.npz”, "v1_terminal_40+40_2a_toc_policy_fp64.npy”) for uav1target1,
+    
+    [1U1T_s6_age1000:100_gamma_](https://prod-files-secure.s3.us-west-2.amazonaws.com/1aaee8ee-3502-4c08-954d-3c57c6979c16/49521d01-aa07-4154-bb85-acb133216743/1U1T_s6_age1000100_gamma_0.999_dt_0.05_val_iter.npz) for multi uav multi target env.
+    - if "File not found error"→ make sure that “:” is between 1000 and 100. Often erased when downloading.
+    
+    
+- Install **pyglet version: 1.5.21** for rendering
+    
+    ```bash
+    pip install pyglet==1.5.21
+    ```
